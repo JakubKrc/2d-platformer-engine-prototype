@@ -21,7 +21,7 @@ class drawObj extends basicObj{
 
     draw(color = "blue"){
             
-        if (this.collision!="0") color = "red";   //saskovanie kvoli testovaniu, bude to kreslit .png subory. Ale aj stvorce ako kolizie vramci editoru
+        //if (this.collision!="0") color = "red";   //saskovanie kvoli testovaniu, bude to kreslit .png subory. Ale aj stvorce ako kolizie vramci editoru
         canvasCtx.fillStyle=color;
         canvasCtx.fillRect(-camera.x + this.x,-camera.y + this.y,this.width,this.height);
         

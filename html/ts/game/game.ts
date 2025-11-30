@@ -6,6 +6,9 @@ let camera = new cameraClass(0,0);
 
 let fps = 60;
 let mainInterval = true;
+
+let objectsNumber:Element;
+let whitchIsPlayer:Element ;
   
 window.onload = function () {
 
@@ -20,9 +23,11 @@ window.onload = function () {
     obj[0] = new playableObj(190,40,20,20, true, false);
     obj[1] = new playableObj(70,70,50,50, false, true);
     obj[2] = new playableObj(150,150,20,20, false, true);
-    obj[3] = new playableObj(0,200,1800,20, false, true);
-    obj[4] = new playableObj(100,177,20,20, false, true);
+    obj[3] = new playableObj(50,200,250,20, false, true);
+    obj[4] = new playableObj(50,147,20,20, false, true);
     obj[5] = new playableObj(180,130,100,20, false, true);
+    obj[6] = new playableObj(20,100,20,20, false, true);
+    obj[7] = new playableObj(230,50,20,60, false, true);
             
     setInterval(mainCalculate ,1000/fps);       //toto bude treba prerobit, nejde to rovanko rychlo na vsetkych kompoch, je to na youtube
     mainDraw();        
@@ -37,7 +42,18 @@ window.onload = function () {
     eventWait(10);
     eventInitialize('obj[4].addVector(2*Math.PI, 0.23)',40,-3,false,true);
 
+    eventWait(45, true);      
+    eventInitialize('obj[6].addVector(Math.PI/2, 0.26)',40,1,false,true);
+    eventWait(50);                                                       
+    eventInitialize('obj[6].addVector(3*Math.PI/2, 0.26)',40,-3,false,true);
+
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    objectsNumber = document.querySelector('#objectsNumber')
+    whitchIsPlayer = document.querySelector('#whitchIsPlayer')
+})
+
 
 function mainCalculate():void {
 
@@ -60,10 +76,11 @@ function mainCalculate():void {
         obj[x-1].addVector(crosshair.aimingAngle, 8);                                  //tiez som chcel mat zvlast projektil class,
     }                                                                                  //a vobec tie class sa mi moc nepacia, neviem to v tom
                                                                                        //zmysluplne rozdelit. rozmyslam na to skoro uplne ich 
-    if(keyPressedWaitForKeyUp(keys['q'])) selectedObject++                             //vypustit a rozdelit data a funkcie. vyhoda aj pri savovani
-    if(keyPressedWaitForKeyUp(keys['e'])) selectedObject--
-    selectedObject = Math.max(0, Math.min(selectedObject, obj.length - 1))   //moznost ovladat iny objekt, to v tej hre chcem mat, toto je len test, ktory to zlbne
-     
+    if(keyPressedWaitForKeyUp(keys['q'])) selectedObject--                             //vypustit a rozdelit data a funkcie. vyhoda aj pri savovani
+    if(keyPressedWaitForKeyUp(keys['e'])) selectedObject++
+    selectedObject = (selectedObject + obj.length) % obj.length;  //moznost ovladat iny objekt, to v tej hre chcem mat, toto je len test, ktory to zlbne
+    
+    
     obj.forEach (obj => obj.collision = "0");  //zakazdym nanovo cisti a pocita kolizie. neviem ci to tak musi byt
     obj.forEach (obj => obj.todo());    //tu sa skryva co ma ktora class urobit. kazda ma svoju verziu todo, myslim ze sa to vola pretazenie pri dedicnosti tried. napr sprite sa iba vykresli, plosinka uz je rigidObject, cize pocita fyziku, a priserka aj AI
  
@@ -94,7 +111,7 @@ function mainDraw(){
     canvasCtx.fillRect(0,0,canvas.width,canvas.height)		
 
     obj.forEach (obj => obj.draw())
-    obj[selectedObject].draw("black");  //tebou ovladany objekt je cierny, ak neni v kolizii, kedy je cerveny. samozrejme len pre testovne ucely
+    obj[selectedObject].draw("orange");  //tebou ovladany objekt je cierny, ak neni v kolizii, kedy je cerveny. samozrejme len pre testovne ucely
 
     if(mouseInicialized){
         canvasCtx.fillStyle='yellow';
@@ -102,6 +119,9 @@ function mainDraw(){
     }
 
     crosshair.draw();
+
+    objectsNumber.innerHTML = obj.length.toString();
+    whitchIsPlayer.innerHTML = (selectedObject+1).toString();
 
     fullscreenLockmouseMsg();   // ta upozornuje, ked ta to nuti zalokovat mys a dat do fulscreenu. teraz je to vypnute, ale ked to bude
                                 //vonku, tak sa to mas hrat jak na 486ke, nie v prehliadaci. v tom to je len kvoli dostupnosti.
